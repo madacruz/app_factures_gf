@@ -97,10 +97,22 @@ def capitalize_name(name):
     return capitalized_name
 
 st.title("Générateur de Factures Grands Formats")
+colonnes_attendues = {
+    "Nom de la structure juridique": "STRUCTURE",
+    "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
+    "Nom du référent": "NOM",
+    "Prénom du référent": "PRENOM",
+    "Le montant de ma cotisation est de :": "TARIF",
+}
 
+st.write("Colonnes attendues (format `Nom dans le CSV` → `renommage`) :")
+
+for nom_csv, renommage in colonnes_attendues.items():
+    st.write(f"- `{nom_csv}` → `{renommage}`")
 col1, col2 = st.columns(2)
 
 with col1:
+    annee_courante = datetime.now().year
     uploaded_file = st.file_uploader("Téléchargez votre fichier CSV", type="csv")
     annee = st.number_input(
         "Choisis une année",
@@ -167,4 +179,5 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
