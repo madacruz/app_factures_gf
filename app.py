@@ -122,7 +122,7 @@ if uploaded_file:
         "Prénom du référent": "PRENOM",
         "Le montant de ma cotisation est de :": "TARIF",
     }
-    st.write("Si une erreur apparait à cause des colonnes, les renommer STRUCTURE ENSEMBLE NOM PRENOM et TARIF")
+    st.write("Si une erreur apparait à cause des colonnes, les renommer STRUCTURE ENSEMBLE NOM PRENOM et TARIF.")
     try:
         # 1. Colonnes obligatoires (hors montant cotisation)
         required_cols = [
@@ -223,6 +223,7 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
 
