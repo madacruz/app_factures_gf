@@ -97,15 +97,6 @@ def capitalize_name(name):
     return capitalized_name
 
 st.title("Générateur de Factures Grands Formats")
-colonnes_attendues = {
-    "Nom de la structure juridique": "STRUCTURE",
-    "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
-    "Nom du référent": "NOM",
-    "Prénom du référent": "PRENOM",
-    "Le montant de ma cotisation est de :": "TARIF",
-}
-
-st.write("Colonnes attendues (format `Nom dans le CSV` → `renommage`) :")
 
 for nom_csv, renommage in colonnes_attendues.items():
     st.write(f"- `{nom_csv}` → `{renommage}`")
@@ -126,14 +117,64 @@ with col1:
 
 if uploaded_file:
     df_original = pd.read_csv(uploaded_file)
+    st.write("Colonnes du CSV uploadé:")
+    st.write(df_original.columns)
     
-    df = df_original.rename({
-        "Nom de la structure juridique": "STRUCTURE",
-        "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
-        "Nom du référent": "NOM",
-        "Prénom du référent": "PRENOM",
-        "Le montant de ma cotisation est de :": "TARIF"
-    }, axis=1)
+    try:
+        # 1. Colonnes obligatoires (hors montant cotisation)
+        required_cols = [
+            "Nom de la structure juridique",
+            "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats",
+            "Nom du référent",
+            "Prénom du référent",
+        ]
+    
+        missing_required = [c for c in required_cols if c not in df_original.columns]
+    
+        if missing_required:
+            raise ValueError(
+                f"Colonnes obligatoires manquantes : {missing_required}"
+            )
+    
+        # 2. Mapping de base
+        rename_map = {
+            "Nom de la structure juridique": "STRUCTURE",
+            "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
+            "Nom du référent": "NOM",
+            "Prénom du référent": "PRENOM",
+        }
+    
+        # 3. Détection de la colonne « montant cotisation »
+        col_tarif_candidates = [
+            col for col in df_original.columns
+            if "montant" in col.lower() and "cotisation" in col.lower()
+        ]
+    
+        if len(col_tarif_candidates) == 0:
+            raise ValueError(
+                "Aucune colonne ne contient à la fois les mots 'montant' et 'cotisation'."
+            )
+        elif len(col_tarif_candidates) > 1:
+            raise ValueError(
+                f"Plusieurs colonnes semblent être le montant de la cotisation : {col_tarif_candidates}. "
+                "Merci de corriger le fichier pour n'en garder qu'une."
+            )
+    
+        # Une seule colonne trouvée → on la renomme en TARIF
+        rename_map[col_tarif_candidates[0]] = "TARIF"
+    
+        # 4. Application du renommage
+        df = df_original.rename(columns=rename_map)
+    
+        st.success("Colonnes renommées avec succès.")
+        # st.dataframe(df)  # si tu veux afficher
+    
+    except Exception as e:
+        # En Streamlit, mieux que print : afficher l'erreur et les colonnes disponibles
+        st.error("Problème avec les noms de colonnes dans le fichier importé.")
+        st.write("Détail de l'erreur :", str(e))
+        st.write("Colonnes trouvées dans le fichier :")
+        st.write(list(df_original.columns))
     
     df = df[["STRUCTURE", "ENSEMBLE", "NOM", "PRENOM", "TARIF"]]
     df['NOM'] = df['NOM'].apply(capitalize_name)
@@ -179,5 +220,6 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
