@@ -98,8 +98,6 @@ def capitalize_name(name):
 
 st.title("Générateur de Factures Grands Formats")
 
-for nom_csv, renommage in colonnes_attendues.items():
-    st.write(f"- `{nom_csv}` → `{renommage}`")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -226,6 +224,7 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
 
