@@ -115,8 +115,6 @@ with col1:
 
 if uploaded_file:
     df_original = pd.read_csv(uploaded_file)
-    st.write("Colonnes du CSV uploadé:")
-    st.write(df_original.columns)
     colonnes_attendues = {
         "Nom de la structure juridique": "STRUCTURE",
         "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
@@ -124,6 +122,7 @@ if uploaded_file:
         "Prénom du référent": "PRENOM",
         "Le montant de ma cotisation est de :": "TARIF",
     }
+    st.write("Si une erreur apparait à cause des colonnes, les renommer STRUCTURE ENSEMBLE NOM PRENOM et TARIF")
     try:
         # 1. Colonnes obligatoires (hors montant cotisation)
         required_cols = [
@@ -224,6 +223,7 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
 
