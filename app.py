@@ -70,12 +70,13 @@ def generer_facture(row, template_path, numero_facture, date_facture):
                 for paragraph in cell.paragraphs:
                     replace_text_in_paragraph(paragraph, replacements)
 
-    docx_filename = f"2024-ADHF{numero_facture} - {row['ENSEMBLE']} cotisation annuelle.docx"
+    
+    docx_filename = f"{annee}-ADHF{numero_facture} - {row['ENSEMBLE']} cotisation annuelle.docx"
     docx_filename = safe_filename(docx_filename)
     docx_path = os.path.join("factures_docx", docx_filename)
     doc.save(docx_path)
 
-    pdf_filename = f"2024-ADHF{numero_facture} - {row['ENSEMBLE']} cotisation annuelle.pdf"
+    pdf_filename = f"{annee}-ADHF{numero_facture} - {row['ENSEMBLE']} cotisation annuelle.pdf"
     pdf_filename = safe_filename(pdf_filename)
     pdf_path = os.path.join("factures_pdf", pdf_filename)
 
@@ -101,6 +102,13 @@ col1, col2 = st.columns(2)
 
 with col1:
     uploaded_file = st.file_uploader("Téléchargez votre fichier CSV", type="csv")
+    annee = st.number_input(
+        "Choisis une année",
+        min_value=2000,
+        max_value=2100,
+        value=annee_courante,
+        step=1,
+    )
     indice_depart = st.number_input("Indice de départ pour les factures", min_value=1, value=1, step=1)
     date_facture = st.date_input("Date de la facture", value=datetime.today())
 
@@ -112,7 +120,7 @@ if uploaded_file:
         "Nom du ou des ensemble(s) et/ou collectif membre(s) de Grands Formats": "ENSEMBLE",
         "Nom du référent": "NOM",
         "Prénom du référent": "PRENOM",
-        "Le montant de ma cotisation est de :\nPour un budget :\n- inférieur à 10 000 euros : 75 euros\n- compris entre 10 000 et 85 000 euros : 150 euros\n- compris entre 85 000 et 150 000 euros : 250 euros\n- supérieur à 150 000 euros : 350 euros)": "TARIF"
+        "Le montant de ma cotisation est de :": "TARIF"
     }, axis=1)
     
     df = df[["STRUCTURE", "ENSEMBLE", "NOM", "PRENOM", "TARIF"]]
@@ -159,3 +167,4 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
