@@ -58,7 +58,8 @@ def generer_facture(row, template_path, numero_facture, date_facture):
         "{{ENSEMBLE}}": str(row['ENSEMBLE']),
         "{{TARIF}}": f"{int(row['TARIF'])}",
         "{{NUMERO}}": str(numero_facture),
-        "{{DATE}}": date_facture.strftime("%d/%m/%Y")
+        "{{DATE}}": date_facture.strftime("%d/%m/%Y"),
+        "{{ANNEE}}": str(annee),
     }
 
     for paragraph in doc.paragraphs:
@@ -223,6 +224,7 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
 
