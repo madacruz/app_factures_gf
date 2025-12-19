@@ -181,8 +181,8 @@ if uploaded_file:
         st.write(list(df_original.columns))
     
     df = df[["STRUCTURE", "ENSEMBLE", "NOM", "PRENOM", "TARIF"]]
-    df['NOM'] = df['NOM'].apply(capitalize_name)
-    df['PRENOM'] = df['PRENOM'].apply(capitalize_name)
+    df["NOM"] = df["NOM"].fillna("").astype(str).apply(capitalize_name)
+    df["PRENOM"] = df["PRENOM"].fillna("").astype(str).apply(capitalize_name)
     df['TARIF'] = df['TARIF'].apply(lambda x: int(re.search(r'\d+', str(x)).group()) if pd.notnull(x) else 0)
 
     with col2:
@@ -224,6 +224,7 @@ if uploaded_file:
     with col2:
         st.subheader("Aperçu après modifications")
         st.write(df.head(50))
+
 
 
 
